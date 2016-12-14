@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}数据展示{% endblock %}
+
+
+{% block page_content %}
+<div class="container">
+    <div class="row">
+    <div class="python-jumbotron jumbotron">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4">
+            <img src="{{url_for('static', filename='img/python-logo.png')}}" alt="python_logo">
+          </div>
+          <div class="col-lg-8">
+            <p style="color: #e6e8ea">
+              python 用于微博舆情监控系统的展示平台，以下是 广中医I栋 聚类后的有关数据。根据算法计算得到的热点话题进行舆情监控。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="container">
+{#    <div class="row">#}
+  		<table class=" table table-hover">
+  			<thead>
+  				<th class="active">ID</th>
+  				<th class="active">微博内容</th>
+  				<th class="active">评论个数</th>
+  				<th class="active">点赞数</th>
+{#  				<th class="active">是否完成</th>#}
+  				<th class="active">创建时间</th>
+  			</thead>
+            <tbody>
+  				{% if rows %}
+  				{% for row in rows %}
+				<tr>
+				  <td class="active">{{ row[0] }}</td>
+				  <td class="success">{{ row[1] }}</td>
+				  <td class="warning">{{ row[4] }}</td>
+				  <td class="danger">{{ row[5] }}</td>
+{#				  <td class="info">{% if duty.status == 1 %}是{% else %}否{% endif %}</td>#}
+				  <td class="info">{{ row[2] }}</td>
+				</tr>
+				 {% endfor %}
+				{% endif %}
+  			</tbody>
+        </table>
+{#    </div>#}
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+  {{super()}}
+  <script type="text/javascript" src="//cdn.bootcss.com/d3/3.5.17/d3.min.js"></script>
+  <script type="text/javascript" src="//cdn.bootcss.com/c3/0.4.11/c3.min.js"></script>
+  <script type="text/javascript" src={{url_for('static', filename='js/stats.js')}}></script>
+  <script type="text/javascript" src={{url_for('static', filename='js/d3.layout.cloud.js')}}></script>
+{#  <script>#}
+{#    plot_keywords('{{url_for('static', filename='data/keywords_stats.json')}}', '#keywords_stats');#}
+{#    plot_pie_chart('{{url_for('static', filename='data/experience.json')}}', '#experience_pie_chart');#}
+{#    plot_pie_chart('{{url_for('static', filename='data/location.json')}}', '#location_pie_chart');#}
+{#    plot_pie_chart('{{url_for('static', filename='data/degree.json')}}', '#degree_pie_chart');#}
+{#    plot_pie_chart('{{url_for('static', filename='data/type.json')}}', '#type_pie_chart');#}
+{#    plot_pie_chart('{{url_for('static', filename='data/salary.json')}}', '#salary_pie_chart');#}
+{#    plot_keywords_cloud('{{url_for('static', filename='data/keywords_cloud.json')}}', '#keywords_cloud');#}
+{#  </script>#}
+
+{% endblock %}

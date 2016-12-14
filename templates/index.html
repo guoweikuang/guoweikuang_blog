@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Index{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style></style>
+{% endblock %}
+
+{% block page_content %}
+  <div class="page-header">
+    <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1>
+    {% if not known %}
+    <p>很高兴遇见你！</p>
+    {% else %}
+    <p>很高兴再次遇见你！</p>
+    {% endif %}
+</div>
+    <p>当前时间为：{{ moment(current_time).format('LLL') }}</p>
+    <p>最近更新于：{{ moment(current_time).fromNow(refresh=True) }}</p>
+    {{ wtf.quick_form(form) }}
+{% endblock %}
+
