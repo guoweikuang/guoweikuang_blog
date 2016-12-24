@@ -42,6 +42,7 @@ type="image/x-icon">
                     </ul>
                 </li>
                 <li><a href="{{ url_for('main.show_data') }}">数据挖掘</a></li>
+                <li><a href="{{ url_for('main.show_picture') }}">数据图表展示</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.can(Permission.MODERATE_COMMENTS) %}

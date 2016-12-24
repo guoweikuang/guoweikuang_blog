@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block title %}数据展示{% endblock %}
 
 
@@ -21,6 +22,48 @@
     </div>
 </div>
 <div class="container">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+    </div>
+</div>
+    <br/>
+<div class="container">
+	<form class="form-inline">
+	  <div class="form-group">
+      <label for="exampleInputEmail2">分类结果</label>
+      	    <select class="form-control" name="category">
+	    	  {% if word_tag %}
+
+              {% for word in word_tag %}
+                   <option>{{ word }}</option>
+                  <p>{{ word }}</p>
+              {% endfor %}
+                  {% else %}
+                  <p>没有分类</p>
+            {% endif %}
+		</select>
+{#      </div>#}
+{#        <button type="submit" class="btn btn-default">寻找</button>#}
+{#    <div class="form-group">#}
+	    <label for="exampleInputEmail2">选择聚类结果类别</label>
+	    <select class="form-control" name="name">
+	    	  {% if category_list %}
+
+              {% for category in category_list %}
+                   <option>{{category}}</option>
+                  <p>{{ category }}</p>
+              {% endfor %}
+                  {% else %}
+                  <p>没有分类</p>
+            {% endif %}
+		</select>
+	  </div>
+    <button type="submit" class="btn btn-default">寻找</button>
+{#        <a class="btn btn-danger" href="{{ url_for('show_every_data', id=) }}">添加内容</a>#}
+	</form>
+
+</div>
+<div class="container">
 {#    <div class="row">#}
   		<table class=" table table-hover">
   			<thead>
@@ -28,25 +71,23 @@
   				<th class="active">微博内容</th>
   				<th class="active">评论个数</th>
   				<th class="active">点赞数</th>
-{#  				<th class="active">是否完成</th>#}
   				<th class="active">创建时间</th>
   			</thead>
+
             <tbody>
-  				{% if rows %}
-  				{% for row in rows %}
-				<tr>
-				  <td class="active">{{ row[0] }}</td>
-				  <td class="success">{{ row[1] }}</td>
-				  <td class="warning">{{ row[4] }}</td>
-				  <td class="danger">{{ row[5] }}</td>
-{#				  <td class="info">{% if duty.status == 1 %}是{% else %}否{% endif %}</td>#}
-				  <td class="info">{{ row[2] }}</td>
-				</tr>
-				 {% endfor %}
-				{% endif %}
-  			</tbody>
+
+                {% for content in contents %}
+            <tr>
+                <td class="active">{{ content[0] }}</td>
+            	  <td class="success">{{ content[1] }}</td>
+				  <td class="warning">{{ content[2] }}</td>
+				  <td class="danger">{{ content[3] }}</td>
+                <td class="info">{{ content[4]}}</td>
+            </tr>
+            </tbody>
+                {% endfor %}
+
         </table>
-{#    </div>#}
 </div>
 {% endblock %}
 

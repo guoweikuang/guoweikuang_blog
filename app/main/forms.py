@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask_wtf import Form
-from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
+from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Length, Regexp, Email, ValidationError
 from ..models import Role, User
 from flask_pagedown.fields import PageDownField
@@ -63,3 +63,8 @@ class CommentForm(Form):
     body = StringField(u'', validators=[DataRequired()])
     submit = SubmitField(u'提交')
 
+
+class ShowDataForm(Form):
+    start_time = StringField(u'开始日期', validators=[DataRequired()])
+    end_time = IntegerField(u'分析的天数', validators=[DataRequired()])
+    submit = SubmitField(u'生成热点话题')

@@ -7,6 +7,7 @@ from flask_mail import Mail
 from config import config
 from flask_login import LoginManager
 from flask_pagedown import PageDown
+# from .analyse import k_means_to_weibo
 
 
 bootstrap = Bootstrap()

@@ -1,6 +1,5 @@
 # coding=utf-8
 from flask import Blueprint
-
 """
 实例化一个Blueprint类对象来创建蓝本，
 构造函数需要传入两个参数，蓝本的名字和蓝本所在的包或模块

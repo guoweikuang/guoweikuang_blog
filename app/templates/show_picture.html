@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}数据展示{% endblock %}
+
+{% block page_content %}
+
+{#    {% for image in images %}#}
+    <div class="page-header">
+    <h1>各分类聚类后的前十关键字图表</h1>
+    </div>
+<div class="container">
+	<form class="form-inline">
+	  <div class="form-group">
+      <label for="exampleInputEmail2">分类结果</label>
+      	    <select class="form-control" name="category">
+	    	  {% if categorys %}
+
+              {% for category in categorys %}
+                   <option>{{ category }}</option>
+              {% endfor %}
+            {% endif %}
+            </select>
+	  </div>
+
+    <button type="submit" class="btn btn-default">寻找</button>
+	</form>
+{#    {% for category in categorys %}#}
+{#    {% if category[1] %}#}
+{% if categorys_flag == 0 %}
+    <img src="{{ url_for('static', filename="images/买卖交易第1类") }}" />
+    <img src="{{ url_for('static', filename="images/买卖交易第2类.png") }}" />
+    <img src="{{ url_for('static', filename="images/买卖交易第3类.png") }}" />
+    <img src="{{ url_for('static', filename="images/买卖交易第4类.png") }}" />
+{% elif categorys_flag == 1 %}
+    <img src="{{ url_for('static', filename="images/求助第1类.png") }}" />
+    <img src="{{ url_for('static', filename="images/求助第2类.png") }}" />
+    <img src="{{ url_for('static', filename="images/求助第3类.png") }}" />
+    <img src="{{ url_for('static', filename="images/求助第4类.png") }}" />
+{% elif categorys_flag == 2 %}
+    <img src="{{ url_for('static', filename="images/校园生活第1类.png") }}" />
+    <img src="{{ url_for('static', filename="images/校园生活第2类.png") }}" />
+    <img src="{{ url_for('static', filename="images/校园生活第3类.png") }}" />
+    <img src="{{ url_for('static', filename="images/校园生活第4类.png") }}" />
+{% elif categorys_flag == 3 %}
+    <img src="{{ url_for('static', filename="images/学校新闻第1类.png") }}" />
+    <img src="{{ url_for('static', filename="images/学校新闻第2类.png") }}" />
+    <img src="{{ url_for('static', filename="images/学校新闻第3类.png") }}" />
+    <img src="{{ url_for('static', filename="images/学校新闻第4类.png") }}" />
+{% elif categorys_flag == 4 %}
+    <img src="{{ url_for('static', filename="images/网络第1类.png") }}" />
+    <img src="{{ url_for('static', filename="images/网络第2类.png") }}" />
+    <img src="{{ url_for('static', filename="images/网络第3类.png") }}" />
+    <img src="{{ url_for('static', filename="images/网络第4类.png") }}" />
+{% elif categorys_flag == 5 %}
+    <img src="{{ url_for('static', filename="images/情感第1类.png") }}" />
+    <img src="{{ url_for('static', filename="images/情感第2类.png") }}" />
+    <img src="{{ url_for('static', filename="images/情感第3类.png") }}" />
+    <img src="{{ url_for('static', filename="images/情感第4类.png") }}" />
+{% endif %}
+</div>
+
+{% endblock %}

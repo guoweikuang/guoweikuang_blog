@@ -4,72 +4,115 @@ from datetime import datetime
 from flask import render_template, session, redirect, \
     url_for, current_app, abort, flash, request, make_response
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, ShowDataForm
 from .. import db
 from ..models import User, Role, Post, Permission, Comment
 from ..email import send_mail
 from flask_login import login_required, current_user
 from ..decorators import admin_required, permission_required
-import pymysql
-
-conn = pymysql.connect(host='localhost',
-                       user='root',
-                       passwd='gwk2014081029',
-                       db='mysql',
-                       charset='utf8')
-cur = conn.cursor()
-cur.execute('use weibo')
-
-
-# @main.route('/', methods=['GET', 'POST'])
-# def index():
-#     form = PostForm()
-#     if form.validate_on_submit():
-#         user = User.query.filter_by(username=form.name.data).first()
-#         print user
-#         if user is None:
-#             user = User(username=form.name.data)
-#             db.session.add(user)
-#             session['known'] = False
-#             if current_app.config['FLASKY_ADMIN']:
-#                 send_mail(current_app.config['FLASKY_ADMIN'], '新用户',
-#                           'mail/new_user', user=user)
-#         else:
-#             session['known'] = True
-#
-#         # 把数据存储在用户会话中，在请求之间“记住”数据
-#         session['name'] = form.name.data
-#         form.name.data = ''
-#         return redirect(url_for('.index'))
-#     return render_template('index.html', form=form, name=session.get('name'),
-#                            known=session.get('known', False),
-#                            current_time=datetime.utcnow())
-
-
-# @main.route('/user/<username>')
-# def user(username):
-#     user = User.query.filter_by(username=username).first()
-#     if user is None:
-#         abort(404)
-#     return render_template('user.html', user=user)
+from ..analyse.k_means_to_weibo import main1
+from ..analyse.handle_redis import r, show_redis_data
+import operator
+import os
 
 
 @main.route('/show_data', methods=['GET', 'POST'])
 def show_data():
-    sql = 'select * from content;'
-    cur.execute(sql)
-    rows = cur.fetchall()
-    rows = rows[:10]
-    return render_template('show_data.html', rows=rows)
+    form = ShowDataForm()
+    word_tag = [u'买卖交易', u'求助', u'校园生活', u'学校新闻', u'网络', u'情感']
+    word_tag = [name + u'二次聚类结果' for name in word_tag]
+    type_name = u'学校新闻二次聚类结果'
+    category = request.values.get("category")
+
+    if category:
+        new_word_tag = []
+        type_name = category
+        new_word_tag.append(category)
+        for word in word_tag:
+            if word != category:
+                new_word_tag.append(word)
+    else:
+        new_word_tag = word_tag
+
+    size_list = {}
+    for index in range(10):
+        size = len(r.lrange(type_name + str(index + 1), 0, -1))
+        if size > 0:
+            size_list[type_name + str(index+1)] = size
+    max_size_name = max(size_list.iteritems(), key=operator.itemgetter(1))[0]
+    all_second_cluster = sorted(size_list.iteritems(), key=operator.itemgetter(1), reverse=True)
+    category_list = sorted(size_list.keys())
+
+    cate = request.values.get("name")
+    if cate:
+        new_category_list = []
+        contents = show_redis_data(cate)
+        new_category_list.append(cate)
+        for i in category_list:
+            if i != cate:
+                new_category_list.append(i)
+    else:
+
+        contents = show_redis_data(max_size_name)
+        new_category_list = category_list
+    print repr(category_list).decode('raw_unicode_escape')
+    if form.validate_on_submit():
+        start_time = form.start_time.data
+        end_time = form.end_time.data
+        main1(start_time, end_time)
+        return redirect(url_for('.show_data'))
+
+    sub_content = []
+    for index, content in enumerate(contents):
+        text, zans, comments, pub_time = content.split('\t')
+        sub_content.append([index, text, zans, comments, pub_time])
+    contents = sub_content
+    # category_list = []
+    return render_template('show_data.html', form=form, contents=contents,
+                           category_list=new_category_list, word_tag=new_word_tag)
 
 
 @main.route('/show_data/<int:id>', methods=['GET', 'POST'])
-def show_data1(id):
-    sql = 'select * from content;'
-    cur.execute(sql)
-    rows = cur.fetchall()
-    rows = rows[:int(id)]
-    return render_template('show_data.html', rows=rows)
+def show_every_data(id):
+    form = ShowDataForm()
+    type_name = u'学校新闻二次聚类结果'
+    file_name = type_name + str(id)
+
+    contents = show_redis_data(file_name)
+    if form.validate_on_submit():
+        start_time = form.start_time.data
+        end_time = form.end_time.data
+        main1(start_time, end_time)
+        return redirect(url_for('.show_every_data', id=id))
+
+    sub_content = []
+    for index, content in enumerate(contents):
+        text, zans, comments, pub_time = content.split('\t')
+        sub_content.append([index, text, zans, comments, pub_time])
+    contents = sub_content
+    return render_template('show_data.html', form=form, contents=contents)
+
+
+@main.route('/show_picture')
+def show_picture():
+    basedir_name = os.path.dirname(os.path.abspath(__file__))
+    print(basedir_name)
+    basedir_name = 'D:\\project\\weibo_showing\\app\\static\\images'
+    images_list = os.listdir(basedir_name)
+    word_tag = [u'买卖交易', u'求助', u'校园生活', u'学校新闻', u'网络', u'情感']
+    category = request.values.get("category")
+    if category:
+        new_category_list = []
+        index = word_tag.index(category)
+        new_category_list.append(category)
+        for word in word_tag:
+            if word != category:
+                new_category_list.append(word)
+    else:
+        new_category_list = word_tag
+        index = 3
+
+    return render_template('show_picture.html', images=images_list, categorys=new_category_list, categorys_flag=index)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
